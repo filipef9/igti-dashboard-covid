@@ -1,3 +1,5 @@
+import { formatNumber, formateDateAndHour } from './helpers/formatHelpers.js';
+
 const apiUrl = 'https://api.covid19api.com';
 
 let countries = [];
@@ -45,13 +47,12 @@ window.addEventListener('load', () => {
 
         axios.get(`${apiUrl}/summary`)
             .then((res) => {
-                const global = res.data.Global;
-                console.log(res.data.Global);
-                const { TotalConfirmed, TotalDeaths, TotalRecovered, Date } = global;
-                totalConfirmadosFormControl.innerText = TotalConfirmed;
-                totalMortesFormControl.innerText = TotalDeaths;
-                totalRecuperadosFormControl.innerText = TotalRecovered;
-                atualizacao.innerText = Date;
+                const { TotalConfirmed, TotalDeaths, TotalRecovered, Date } = res.data.Global;
+                totalConfirmadosFormControl.innerText = formatNumber(TotalConfirmed);
+                totalMortesFormControl.innerText = formatNumber(TotalDeaths);
+                totalRecuperadosFormControl.innerText = formatNumber(TotalRecovered);
+                console.log(formateDateAndHour(Date));
+                atualizacao.innerText = formateDateAndHour(Date);
             })
             .catch((err) => {
                 console.log(err);
