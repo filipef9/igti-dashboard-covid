@@ -4,11 +4,75 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard COVID</title>
+    <title>Dashboard COVID-19</title>
 
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="container p-5">
+        <h1 class="text-center text-5xl md:text-8xl">COVID-19</h1>
 
+        <div>            
+            <select id="selectedCountry" name="selectedCountry"></select>
+        </div>
+
+        <div>
+            <input id="date" type="date" name="date" min="2019-01-01">
+        </div>
+
+        <div class="flex flex-wrap mb-2">
+            <div class="w-full md:w-1/2 xl:w-1/3 pt-3 px-3 md:pl-2">
+                <div class="bg-red-600 border rounded shadow p-2">
+                    <div class="flex flex-row items-center">
+                        <div class="flex-shrink pl-1 pr-4"><i class="fas fa-users fa-2x fa-fw fa-inverse"></i></div>
+                        <div class="flex-1 text-right">
+                            <h5 class="text-white">Total Confirmados</h5>
+                            <h3 class="text-white text-3xl"><span id="totalConfirmados">13</span> <span class="text-blue-400"><i class="fas fa-caret-up"></i></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 xl:w-1/3 pt-3 px-3 md:pl-2">
+                <div class="bg-black border rounded shadow p-2">
+                    <div class="flex flex-row items-center">
+                        <div class="flex-shrink pl-1 pr-4"><i class="fas fa-users fa-2x fa-fw fa-inverse"></i></div>
+                        <div class="flex-1 text-right">
+                            <h5 class="text-white">Total Mortes</h5>
+                            <h3 class="text-white text-3xl"><span id="totalMortes">13</span> <span class="text-blue-400"><i class="fas fa-caret-up"></i></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 xl:w-1/3 pt-3 px-3 md:pl-2">
+                <div class="bg-green-600 border rounded shadow p-2">
+                    <div class="flex flex-row items-center">
+                        <div class="flex-shrink pl-1 pr-4"><i class="fas fa-users fa-2x fa-fw fa-inverse"></i></div>
+                        <div class="flex-1 text-right">
+                            <h5 class="text-white">Total Recuperados</h5>
+                            <h3 class="text-white text-3xl"><span id="totalRecuperados">13</span> <span class="text-blue-400"><i class="fas fa-caret-up"></i></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 xl:w-1/3 pt-3 px-3 md:pl-2">
+                <div class="bg-blue-600 border rounded shadow p-2">
+                    <div class="flex flex-row items-center">
+                        <div class="flex-shrink pl-1 pr-4"><i class="fas fa-users fa-2x fa-fw fa-inverse"></i></div>
+                        <div class="flex-1 text-right">
+                            <h5 class="text-white">Atualização</h5>
+                            <h3 class="text-white text-3xl"><span id="atualizacao">13</span> <span class="text-blue-400"><i class="fas fa-caret-up"></i></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="js/app.js" type="module"></script>
 </body>
 </html>
