@@ -1,0 +1,26 @@
+{
+  "name": "igti-dashboard-covid",
+  "version": "1.0.0",
+  "description": "IGTI - Bootcamp Desenvolvedor React - Trabalho Prático do Módulo 1",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "npx browser-sync start --server --no-ui --listen '0.0.0.0' --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filipef9/igti-dashboard-covid.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/filipef9/igti-dashboard-covid/issues"
+  },
+  "homepage": "https://github.com/filipef9/igti-dashboard-covid#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.14"
+  }
+}
