@@ -1,16 +1,104 @@
+import GlobalCardSummary from './components/GlobalCardSummary.js';
 import { formatNumber, formateDateAndHour } from './helpers/formatHelpers.js';
 
 const apiUrl = 'https://api.covid19api.com';
 
 let countries = [];
 
-const countryFormControl = document.getElementById('selectedCountry');
-const date = document.getElementById('date');
+const sectionSummary = document.getElementById('summary');
 
-const totalConfirmadosFormControl = document.getElementById('totalConfirmados');
-const totalMortesFormControl = document.getElementById('totalMortes');
-const totalRecuperadosFormControl = document.getElementById('totalRecuperados');
-const atualizacao = document.getElementById('atualizacao');
+const selectedCountryFormControl = document.getElementById('selectedCountry');
+const selectedDateFormControl = document.getElementById('date');
+const btnFiltrar = document.getElementById('btnFiltrar');
+
+/*const totalConfirmadosSummary = document.getElementById('totalConfirmados');
+const totalMortesSummary = document.getElementById('totalMortes');
+const totalRecuperadosSummary = document.getElementById('totalRecuperados');
+const atualizacaoSummary = document.getElementById('atualizacao');
+const ativosSummary = document.getElementById('ativos');*/
+
+/*let summary = {
+    totalConfirmados: 0,
+    totalMortes: 0,
+    totalRecuperados: 0,
+    atualizacao: '',
+    ativos: 0
+};*/
+
+//const renderSummary = (disableDiarioSection) => {
+    /*totalConfirmadosSummary.innerText = formatNumber(summary.totalConfirmados);
+    totalMortesSummary.innerText = formatNumber(summary.totalMortes);
+    totalRecuperadosSummary.innerText = formatNumber(summary.totalRecuperados);
+    atualizacaoSummary.innerText = formateDateAndHour(summary.atualizacao);
+    ativosSummary.innerText = formatNumber(summary.ativos);
+    
+    if (disableDiarioSection) hideDiarioSections();
+    else showDiarioSections;*/
+//};
+
+const renderGlobalSummary = (summary) => {
+    const totalConfirmados = GlobalCardSummary(
+        'Total Confirmados',
+        summary.totalConfirmados,
+        formatNumber,
+        'bg-red-600'
+    );
+
+    const totalMortes = GlobalCardSummary(
+        'Total Mortes',
+        summary.totalMortes,
+        formatNumber,
+        'bg-black'
+    );
+
+    const totalRecuperados = GlobalCardSummary(
+        'Total Recuperados',
+        summary.totalRecuperados,
+        formatNumber,
+        'bg-green-600'
+    );
+
+    const atualizacao = GlobalCardSummary(
+        'Atualização',
+        summary.atualizacao,
+        formateDateAndHour,
+        'bg-blue-600'
+    );
+
+    const summaries = [totalConfirmados, totalMortes, totalRecuperados, atualizacao];
+    sectionSummary.innerHTML = summaries.join('');
+};
+
+const renderCountrySummary = (summary) => {
+
+}
+
+/*const hideDiarioSections = () => {
+    const diarioSections = document.querySelectorAll('.diario');
+    diarioSections.forEach((diario) => diario.classList.add('hidden'));
+};
+
+const showDiarioSections = () => {
+    const diarioSections = document.querySelectorAll('.diario');
+    diarioSections.forEach((diario) => diario.classList.remove('hidden'));
+};*/
+
+/*const resetSummary = () => {
+    summary = {
+        totalConfirmados: 0,
+        totalMortes: 0,
+        totalRecuperados: 0,
+        atualizacao: '',
+        ativos: 0
+    };
+};*/
+
+const createOption = (value, label) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.text = label;
+    return option;
+};
 
 window.addEventListener('load', () => {
     axios.get(`${apiUrl}/countries`)
@@ -25,20 +113,16 @@ window.addEventListener('load', () => {
                 return 0;
             });
 
-            const globalOption = document.createElement('option');
-            globalOption.value = 'global';
-            globalOption.text = 'Global';
-            countryFormControl.add(globalOption, null);
+            const globalOption = createOption('global', 'Global');
+            selectedCountryFormControl.add(globalOption, null);
 
             countries.forEach((country) => {
                 const { Country, Slug } = country;
-                const countryOption = document.createElement('option');
-                countryOption.value = Slug;
-                countryOption.text = Country;
-                countryFormControl.add(countryOption, null);
+                const countryOption = createOption(Slug, Country);
+                selectedCountryFormControl.add(countryOption, null);
             });
 
-            date.value = new Date().toISOString().slice(0, 10);
+            selectedDateFormControl.value = new Date().toISOString().slice(0, 10);
         })
         .catch((err) => {
             console.log(err);
@@ -48,14 +132,61 @@ window.addEventListener('load', () => {
         axios.get(`${apiUrl}/summary`)
             .then((res) => {
                 const { TotalConfirmed, TotalDeaths, TotalRecovered, Date } = res.data.Global;
-                totalConfirmadosFormControl.innerText = formatNumber(TotalConfirmed);
-                totalMortesFormControl.innerText = formatNumber(TotalDeaths);
-                totalRecuperadosFormControl.innerText = formatNumber(TotalRecovered);
-                console.log(formateDateAndHour(Date));
-                atualizacao.innerText = formateDateAndHour(Date);
+                
+                const summary = {
+                    totalConfirmados: TotalConfirmed,
+                    totalMortes: TotalDeaths,
+                    totalRecuperados: TotalRecovered,
+                    atualizacao: Date,
+                    ativos: null
+                };
+
+                //renderSummary(true);
+                renderGlobalSummary(summary);
             })
             .catch((err) => {
                 console.log(err);
                 // tratar summary
             });
+
+    btnFiltrar.addEventListener('click', (_) => {
+        const selectedCountry = selectedCountryFormControl.value;
+        const [year, month, day] = selectedDateFormControl.value.split('-');
+
+        const params = {
+            from: `${year}-${month}-${day - 1}T00:00:00Z`,
+            to: `${year}-${month}-${day}T00:00:00Z`
+        };
+
+        axios.get(`${apiUrl}/country/${selectedCountry}`, { params })
+            .then((res) => {
+                console.log(res.data);
+                const summaryExists = res.data.length === 2;
+                if (summaryExists) {
+                    console.log('summary exists')
+                    const [summaryDayBefore, summarySelectedDate] = res.data;
+    
+                    const summary = {
+                        totalConfirmados: summarySelectedDate.Confirmed,
+                        totalMortes: summarySelectedDate.Deaths,
+                        totalRecuperados: summarySelectedDate.Recovered,
+                        atualizacao: null,
+                        ativos: summarySelectedDate.Active
+                    };
+                } else {
+                    console.log('summary do not exists')
+                    resetSummary();
+                }
+                //renderSummary(false);
+                const summary = {
+                    totalConfirmados: 0,
+                    totalMortes: 0,
+                    totalRecuperados: 0,
+                    atualizacao: '',
+                    ativos: 0
+                };
+                renderCountrySummary(summary);
+            })
+            .catch((err) => console.log(err));
+    });
 });
