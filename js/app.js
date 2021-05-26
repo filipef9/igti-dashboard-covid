@@ -1,3 +1,4 @@
+import CountryCardSummary from './components/CountryCardSummary.js';
 import GlobalCardSummary from './components/GlobalCardSummary.js';
 import { formatNumber, formateDateAndHour } from './helpers/formatHelpers.js';
 
@@ -10,31 +11,6 @@ const sectionSummary = document.getElementById('summary');
 const selectedCountryFormControl = document.getElementById('selectedCountry');
 const selectedDateFormControl = document.getElementById('date');
 const btnFiltrar = document.getElementById('btnFiltrar');
-
-/*const totalConfirmadosSummary = document.getElementById('totalConfirmados');
-const totalMortesSummary = document.getElementById('totalMortes');
-const totalRecuperadosSummary = document.getElementById('totalRecuperados');
-const atualizacaoSummary = document.getElementById('atualizacao');
-const ativosSummary = document.getElementById('ativos');*/
-
-/*let summary = {
-    totalConfirmados: 0,
-    totalMortes: 0,
-    totalRecuperados: 0,
-    atualizacao: '',
-    ativos: 0
-};*/
-
-//const renderSummary = (disableDiarioSection) => {
-    /*totalConfirmadosSummary.innerText = formatNumber(summary.totalConfirmados);
-    totalMortesSummary.innerText = formatNumber(summary.totalMortes);
-    totalRecuperadosSummary.innerText = formatNumber(summary.totalRecuperados);
-    atualizacaoSummary.innerText = formateDateAndHour(summary.atualizacao);
-    ativosSummary.innerText = formatNumber(summary.ativos);
-    
-    if (disableDiarioSection) hideDiarioSections();
-    else showDiarioSections;*/
-//};
 
 const renderGlobalSummary = (summary) => {
     const totalConfirmados = GlobalCardSummary(
@@ -70,28 +46,45 @@ const renderGlobalSummary = (summary) => {
 };
 
 const renderCountrySummary = (summary) => {
+    const totalConfirmados = CountryCardSummary(
+        'Total Confirmados',
+        summary.totalConfirmados,
+        formatNumber,
+        'bg-red-600',
+        summary.diario.value,
+        summary.diario.indicator
+    );
 
+    const totalMortes = CountryCardSummary(
+        'Total Mortes',
+        summary.totalMortes,
+        formatNumber,
+        'bg-black',
+        summary.diario.value,
+        summary.diario.indicator
+    );
+
+    const totalRecuperados = CountryCardSummary(
+        'Total Recuperados',
+        summary.totalRecuperados,
+        formatNumber,
+        'bg-green-600',
+        summary.diario.value,
+        summary.diario.indicator
+    );
+
+    const ativos = CountryCardSummary(
+        'Ativos',
+        summary.ativos,
+        formatNumber,
+        'bg-blue-600',
+        summary.diario.value,
+        summary.diario.indicator
+    );
+
+    const summaries = [totalConfirmados, totalMortes, totalRecuperados, ativos];
+    sectionSummary.innerHTML = summaries.join('');
 }
-
-/*const hideDiarioSections = () => {
-    const diarioSections = document.querySelectorAll('.diario');
-    diarioSections.forEach((diario) => diario.classList.add('hidden'));
-};
-
-const showDiarioSections = () => {
-    const diarioSections = document.querySelectorAll('.diario');
-    diarioSections.forEach((diario) => diario.classList.remove('hidden'));
-};*/
-
-/*const resetSummary = () => {
-    summary = {
-        totalConfirmados: 0,
-        totalMortes: 0,
-        totalRecuperados: 0,
-        atualizacao: '',
-        ativos: 0
-    };
-};*/
 
 const createOption = (value, label) => {
     const option = document.createElement('option');
@@ -141,7 +134,6 @@ window.addEventListener('load', () => {
                     ativos: null
                 };
 
-                //renderSummary(true);
                 renderGlobalSummary(summary);
             })
             .catch((err) => {
@@ -160,31 +152,35 @@ window.addEventListener('load', () => {
 
         axios.get(`${apiUrl}/country/${selectedCountry}`, { params })
             .then((res) => {
-                console.log(res.data);
                 const summaryExists = res.data.length === 2;
+                let summary = null;
                 if (summaryExists) {
-                    console.log('summary exists')
                     const [summaryDayBefore, summarySelectedDate] = res.data;
     
-                    const summary = {
+                    summary = {
                         totalConfirmados: summarySelectedDate.Confirmed,
                         totalMortes: summarySelectedDate.Deaths,
                         totalRecuperados: summarySelectedDate.Recovered,
-                        atualizacao: null,
-                        ativos: summarySelectedDate.Active
+                        ativos: summarySelectedDate.Active,
+                        diario: {
+                            value: 0,
+                            indicator: 'up'
+                        }
                     };
                 } else {
-                    console.log('summary do not exists')
-                    resetSummary();
+                    summary = {
+                        totalConfirmados: 0,
+                        totalMortes: 0,
+                        totalRecuperados: 0,
+                        atualizacao: '',
+                        ativos: 0,
+                        diario: {
+                            value: 0,
+                            indicator: 'up'
+                        }
+                    };
                 }
-                //renderSummary(false);
-                const summary = {
-                    totalConfirmados: 0,
-                    totalMortes: 0,
-                    totalRecuperados: 0,
-                    atualizacao: '',
-                    ativos: 0
-                };
+
                 renderCountrySummary(summary);
             })
             .catch((err) => console.log(err));
