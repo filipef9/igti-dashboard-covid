@@ -1,11 +1,8 @@
-const CountryCardSummary = (
-    label,
-    value,
-    formatter,
-    backgroundColor,
-    diarioValue,
-    diarioIndicator
-) => {
+import { formatNumber } from "../helpers/formatHelpers.js";
+
+const CountryCardSummary = (summary) => {
+    const { label, value, formatter, backgroundColor, diario } = summary;
+
     const indicator = {
         'up': '<i class="fas fa-caret-up"></i>',
         'down': '<i class="fas fa-caret-down"></i>'
@@ -19,9 +16,9 @@ const CountryCardSummary = (
                         <h5 class="text-white">${label}</h5>
                         <h3 class="text-white text-3xl">${formatter(value)}</h3>
                         <div class="diario text-white">
-                            <span class="text-blue-400">${indicator[diarioIndicator.toLowerCase()]}</span>
+                            <span class="text-blue-400">${indicator[diario.indicator.toLowerCase()]}</span>
                             <span>Diário:</span>
-                            <span>${diarioValue}</span>
+                            <span>${formatNumber(diario.value)}</span>
                         </div>
                     </div>
                 </div>

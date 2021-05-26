@@ -1,9 +1,6 @@
-const GlobalCardSummary = (
-    label,
-    value,
-    formatter,
-    backgroundColor
-) => {
+const GlobalCardSummary = (summary) => {
+    const { label, value, formatter, backgroundColor } = summary;
+
     return `
         <div class="w-full md:w-1/2 xl:w-1/3 pt-3 px-3 md:pl-2">
             <div class="${backgroundColor} rounded shadow p-2">
