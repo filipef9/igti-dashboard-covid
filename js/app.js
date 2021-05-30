@@ -58,6 +58,17 @@ const createOption = (value, label) => {
     return option;
 };
 
+const loadCountriesSelect = (countries) => {
+    const globalOption = createOption('global', 'Global');
+    selectedCountryFormControl.add(globalOption, null);
+
+    countries.forEach((country) => {
+        const { Country, Slug } = country;
+        const countryOption = createOption(Slug, Country);
+        selectedCountryFormControl.add(countryOption, null);
+    });
+};
+
 window.addEventListener('load', () => {
     axios.get(`${apiUrl}/countries`)
         .then((res) => {
@@ -71,14 +82,7 @@ window.addEventListener('load', () => {
                 return 0;
             });
 
-            const globalOption = createOption('global', 'Global');
-            selectedCountryFormControl.add(globalOption, null);
-
-            countries.forEach((country) => {
-                const { Country, Slug } = country;
-                const countryOption = createOption(Slug, Country);
-                selectedCountryFormControl.add(countryOption, null);
-            });
+            loadCountriesSelect(countries);
 
             selectedDateFormControl.value = new Date().toISOString().slice(0, 10);
         })
