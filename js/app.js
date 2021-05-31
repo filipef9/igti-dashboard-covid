@@ -1,7 +1,5 @@
-import CountryCardSummary from './components/CountryCardSummary.js';
-import GlobalCardSummary from './components/GlobalCardSummary.js';
+import CountrySummary from './components/CountrySummary.js';
 import GlobalSummary from './components/GlobalSummary.js';
-import { formatNumber, formateDateAndHour } from './helpers/formatHelpers.js';
 
 const apiUrl = 'https://api.covid19api.com';
 
@@ -13,31 +11,8 @@ const selectedCountryFormControl = document.getElementById('selectedCountry');
 const selectedDateFormControl = document.getElementById('date');
 const btnFiltrar = document.getElementById('btnFiltrar');
 
-const renderCountrySummary = (summary) => {
-    const { totalConfirmados, totalMortes, totalRecuperados, ativos } = summary;
-
-    const cardTotalConfirmados = CountryCardSummary(totalConfirmados);
-    const cardTotalMortes = CountryCardSummary(totalMortes);
-    const cardTotalRecuperados = CountryCardSummary(totalRecuperados);
-    const cardAtivos = CountryCardSummary(ativos);
-
-    const summaries = [cardTotalConfirmados, cardTotalMortes, cardTotalRecuperados, cardAtivos];
-    sectionSummary.innerHTML = summaries.join('');
-};
-
 const renderSummaryNotFound = () => {
     sectionSummary.innerHTML = '<h3>Sumário não encontrado.</h3>';
-};
-
-const resolveDiarioIndicator = (valueBeforeDayBefore, valueDayBefore, valueSelectedDate) => {
-    const valueIndicatorDayBefore = valueDayBefore - valueBeforeDayBefore;
-    const valueIndicatorSelectedDate = valueSelectedDate - valueDayBefore;
-    const indicator = (valueIndicatorSelectedDate > valueIndicatorDayBefore) ? 'up' : 'down';
-
-    return {
-        value: Math.abs(valueIndicatorSelectedDate),
-        indicator
-    };
 };
 
 const createOption = (value, label) => {
@@ -108,56 +83,37 @@ window.addEventListener('load', () => {
         axios.get(`${apiUrl}/country/${selectedCountry}`, { params })
             .then((res) => {
                 const summaryExists = res.data.length === 3;
-                let summary = null;
+                let summaryData = null;
                 if (summaryExists) {
                     const [summaryBeforeDayBefore, summaryDayBefore, summarySelectedDate] = res.data;
 
-                    const totalConfirmados = {
-                        label: 'Total Confirmados',
-                        value: summarySelectedDate.Confirmed,
-                        formatter: formatNumber,
-                        backgroundColor: 'bg-red-600',
-                        diario: resolveDiarioIndicator(
-                            summaryBeforeDayBefore.Confirmed, summaryDayBefore.Confirmed, summarySelectedDate.Confirmed
-                        )
+                    summaryData = { 
+                        totalConfirmados: {
+                            valueSelectedDate: summarySelectedDate.Confirmed,
+                            valueDayBefore: summaryDayBefore.Confirmed,
+                            valueBeforeDayBefore: summaryBeforeDayBefore.Confirmed
+                        },
+                        totalMortes: {
+                            valueSelectedDate: summarySelectedDate.Deaths,
+                            valueDayBefore: summaryDayBefore.Deaths,
+                            valueBeforeDayBefore: summaryBeforeDayBefore.Deaths
+                        },
+                        totalRecuperados: {
+                            valueSelectedDate: summarySelectedDate.Recovered,
+                            valueDayBefore: summaryDayBefore.Recovered,
+                            valueBeforeDayBefore: summaryBeforeDayBefore.Active
+                        },
+                        ativos: {
+                            valueSelectedDate: summarySelectedDate.Active,
+                            valueDayBefore: summaryDayBefore.Active,
+                            valueBeforeDayBefore: summaryBeforeDayBefore.Active
+                        }
                     };
-
-                    const totalMortes = {
-                        label: 'Total Mortes',
-                        value: summarySelectedDate.Deaths,
-                        formatter: formatNumber,
-                        backgroundColor: 'bg-black',
-                        diario: resolveDiarioIndicator(
-                            summaryBeforeDayBefore.Deaths, summaryDayBefore.Deaths, summarySelectedDate.Deaths
-                        )
-                    };
-
-                    const totalRecuperados = {
-                        label: 'Total Recuperados',
-                        value: summarySelectedDate.Recovered,
-                        formatter: formatNumber,
-                        backgroundColor: 'bg-green-600',
-                        diario: resolveDiarioIndicator(
-                            summaryBeforeDayBefore.Recovered, summaryDayBefore.Recovered, summarySelectedDate.Recovered
-                        )
-                    };
-
-                    const ativos = {
-                        label: 'Ativos',
-                        value: summarySelectedDate.Active,
-                        formatter: formatNumber,
-                        backgroundColor: 'bg-blue-600',
-                        diario: resolveDiarioIndicator(
-                            summaryBeforeDayBefore.Active, summaryDayBefore.Active, summarySelectedDate.Active
-                        )
-                    };
-
-                    summary = { totalConfirmados, totalMortes, totalRecuperados, ativos };
                 } else {
-                    renderSummaryNotFound();
+                    //renderSummaryNotFound();
                 }
 
-                renderCountrySummary(summary);
+                sectionSummary.innerHTML = CountrySummary(summaryData);
             })
             .catch((err) => console.log(err));
     });
