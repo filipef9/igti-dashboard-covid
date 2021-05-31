@@ -1,5 +1,6 @@
 import CountryCardSummary from './components/CountryCardSummary.js';
 import GlobalCardSummary from './components/GlobalCardSummary.js';
+import GlobalSummary from './components/GlobalSummary.js';
 import { formatNumber, formateDateAndHour } from './helpers/formatHelpers.js';
 
 const apiUrl = 'https://api.covid19api.com';
@@ -11,18 +12,6 @@ const sectionSummary = document.getElementById('summary');
 const selectedCountryFormControl = document.getElementById('selectedCountry');
 const selectedDateFormControl = document.getElementById('date');
 const btnFiltrar = document.getElementById('btnFiltrar');
-
-const renderGlobalSummary = (summary) => {
-    const { totalConfirmados, totalMortes, totalRecuperados, atualizacao } = summary;
-
-    const cardTotalConfirmados = GlobalCardSummary(totalConfirmados);
-    const cardTotalMortes = GlobalCardSummary(totalMortes);
-    const cardTotalRecuperados = GlobalCardSummary(totalRecuperados);
-    const cardAtualizacao = GlobalCardSummary(atualizacao);
-
-    const summaries = [cardTotalConfirmados, cardTotalMortes, cardTotalRecuperados, cardAtualizacao];
-    sectionSummary.innerHTML = summaries.join('');
-};
 
 const renderCountrySummary = (summary) => {
     const { totalConfirmados, totalMortes, totalRecuperados, ativos } = summary;
@@ -95,36 +84,12 @@ window.addEventListener('load', () => {
         .then((res) => {
             const { TotalConfirmed, TotalDeaths, TotalRecovered, Date } = res.data.Global;
 
-            const totalConfirmados = {
-                label: 'Total Confirmados',
-                value: TotalConfirmed,
-                formatter: formatNumber,
-                backgroundColor: 'bg-red-600'
-            };
-
-            const totalMortes = {
-                label: 'Total Mortes',
-                value: TotalDeaths,
-                formatter: formatNumber,
-                backgroundColor: 'bg-black'
-            };
-
-            const totalRecuperados = {
-                label: 'Total Recuperados',
-                value: TotalRecovered,
-                formatter: formatNumber,
-                backgroundColor: 'bg-green-600'
-            };
-
-            const atualizacao = {
-                label: 'Atualização',
-                value: Date,
-                formatter: formateDateAndHour,
-                backgroundColor: 'bg-blue-600'
-            };
-
-            const summary = { totalConfirmados, totalMortes, totalRecuperados, atualizacao };
-            renderGlobalSummary(summary);
+            sectionSummary.innerHTML = GlobalSummary({
+                totalConfirmados: TotalConfirmed,
+                totalMortes: TotalDeaths,
+                totalRecuperados: TotalRecovered,
+                atualizacao: Date
+            });
         })
         .catch((err) => {
             console.log(err);
